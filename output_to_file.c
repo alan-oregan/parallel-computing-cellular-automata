@@ -9,7 +9,7 @@ int population_removed = 0;
 char *fileNameBuffer;
 FILE *dat_file;
 
-void output_to_file(struct cell (*world)[SIM_SIZE][SIM_SIZE], int iteration, FILE *population_file){
+void output_to_file(CELL **world, int iteration, FILE *population_file){
 
     sprintf(fileNameBuffer, "%s\\world_%d.dat", OUTPUT_FILE_DIR, iteration);
 
@@ -19,7 +19,7 @@ void output_to_file(struct cell (*world)[SIM_SIZE][SIM_SIZE], int iteration, FIL
 
     for (i = 0; i < SIM_SIZE; i++) {
         for (j = 0; j < SIM_SIZE; j++) {
-            cell_status = world[i][j]->status;
+            cell_status = world[i][j].status;
             switch (cell_status) {
                 case SUSCEPTIBLE:
                     population_susceptible++;

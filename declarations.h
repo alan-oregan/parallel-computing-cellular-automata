@@ -30,12 +30,12 @@
 #define DEBUG               0 // greater than 2 for debug
 
 // data structures
-struct cell {
+typedef struct cell {
     signed char status;
     signed char duration;
-};
+} CELL;
 
 // functions
-void initialize_world(struct cell (*world)[SIM_SIZE][SIM_SIZE]);
-float check_neighbours(struct cell (*world)[SIM_SIZE][SIM_SIZE], int row, int col);
-void output_to_file(struct cell (*world)[SIM_SIZE][SIM_SIZE], int iteration, FILE *population_file);
+void initialize_world(CELL **world);
+float check_neighbours(CELL **world, int row, int col);
+void output_to_file(CELL **world, int iteration, FILE *population_file);
