@@ -5,28 +5,23 @@ int main() {
     CELL *world[SIM_SIZE];
     CELL *newWorld[SIM_SIZE];
 
-    for(i = 0; i < SIM_SIZE; i++){
-        world[i] = (CELL *)malloc(SIM_SIZE*sizeof(CELL));
-        newWorld[i] = (CELL *)malloc(SIM_SIZE*sizeof(CELL));
-    }
-
     FILE *population_file = fopen("population.csv", "w");
 
+    srand((unsigned int)time(NULL));
+
     // add header to csv
-    fprintf(population_file, "Iteration,Population Susceptible,Population Exposed,Population Infected,Population Removed\n");
+    fprintf(population_file, "Generation,Population Susceptible,Population Exposed,Population Infected,Population Removed\n");
 
     // initialise world
-    initialize_world(world);
+    initialize_world(world, newWorld);
 
     // output generation 0
     output_to_file(world, 0, population_file);
 
-    memcpy(newWorld, world, SIM_SIZE * SIM_SIZE * sizeof(struct cell));
-
     float chance;
-    int iteration, row, col;
+    int generation, row, col;
 
-    for (iteration = 1; iteration <= GEN_LENGTH; iteration++) {
+    for (generation = 1; generation < GEN_LENGTH; generation++) {
 
         for (row = 0; row < SIM_SIZE; row++) {
             for (col = 0; col < SIM_SIZE; col++) {
@@ -71,19 +66,37 @@ int main() {
             }
         }
 
-        if (iteration % OUTPUT_SAMPLE_SIZE == 0) {
-            output_to_file(newWorld, iteration, population_file);
+        // output to file every sample size generation
+        if (generation % OUTPUT_SAMPLE_SIZE == 0) {
+            output_to_file(newWorld, generation, population_file);
         }
 
-        memcpy(world, newWorld, SIM_SIZE*SIM_SIZE*sizeof(world[0][0]));
+        // update world with newWorld
+        for(i = 0; i < SIM_SIZE; i++){
+            memcpy(world[i], newWorld[i], SIM_SIZE*sizeof(CELL));
+        }
+
+        #if (GENERATION_OUTPUT == 1)
+            printf("Iteration %d/%d\r", generation, GEN_LENGTH);
+        #endif
     }
-    output_to_file(newWorld, iteration, population_file);
 
-    fclose(population_file);
+    // output final generation regardless of sample size
+    output_to_file(newWorld, generation, population_file);
 
-    for(i = 0; i < SIM_SIZE; i++){
-        free(world[i]);
-        free(newWorld[i]);
+    #if (GENERATION_OUTPUT == 1)
+        printf("Iteration %d/%d\n", generation, GEN_LENGTH);
+    #endif
+
+    printf("See /output and population.csv for output\n");
+
+        // close files and free memory
+        fclose(population_file);
+
+        for (i = 0; i < SIM_SIZE; i++)
+        {
+            free(world[i]);
+            free(newWorld[i]);
     }
 
     return 0;

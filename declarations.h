@@ -2,13 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 // macros
 #define INITIAL_INFECTION_ROW   0
-#define INITIAL_EXPOSED_NUMBER  10
+#define INITIAL_EXPOSED_NUMBER  1
 
-#define SIM_SIZE            10
-#define GEN_LENGTH    10
+#define SIM_SIZE            1000
+#define GEN_LENGTH          100
 #define OUTPUT_SAMPLE_SIZE  10
 
 #define SUSCEPTIBLE         'S'
@@ -27,7 +28,9 @@
 
 #define OUTPUT_FILE_DIR     "output"
 
+// macros for #if statements
 #define DEBUG               0 // greater than 2 for debug
+#define GENERATION_OUTPUT   1 // 1 for showing the generation number as the program runs
 
 // data structures
 typedef struct cell {
@@ -35,7 +38,7 @@ typedef struct cell {
     signed char duration;
 } CELL;
 
-// functions
-void initialize_world(CELL **world);
-float check_neighbours(CELL **world, int row, int col);
-void output_to_file(CELL **world, int iteration, FILE *population_file);
+// Function prototypes
+void initialize_world(CELL**, CELL**);
+float check_neighbours(CELL**, int, int);
+void output_to_file(CELL**, int, FILE*);

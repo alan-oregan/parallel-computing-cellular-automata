@@ -18,3 +18,9 @@ clean:
 	rm *.o
 	rm -R output
 	rm *.csv
+
+clean-win:
+	del simulation*
+	del *.o
+	rmdir -R output
+	del *.csv

@@ -6,7 +6,7 @@ int population_exposed = 0;
 int population_infected = 0;
 int population_removed = 0;
 
-char *fileNameBuffer;
+char fileNameBuffer[100];
 FILE *dat_file;
 
 void output_to_file(CELL **world, int iteration, FILE *population_file){
@@ -16,6 +16,10 @@ void output_to_file(CELL **world, int iteration, FILE *population_file){
     dat_file = fopen(fileNameBuffer, "w");
     int i, j;
     signed char cell_status;
+    population_susceptible = 0;
+    population_exposed = 0;
+    population_infected = 0;
+    population_removed = 0;
 
     for (i = 0; i < SIM_SIZE; i++) {
         for (j = 0; j < SIM_SIZE; j++) {
