@@ -97,7 +97,7 @@ int main() {
         {
             free(world[i]);
             free(newWorld[i]);
-    }
+        }
 
     return 0;
 }
