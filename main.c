@@ -90,14 +90,14 @@ int main() {
 
     printf("See /output and population.csv for output\n");
 
-        // close files and free memory
-        fclose(population_file);
+    // close files and free memory
+    fclose(population_file);
 
-        for (i = 0; i < SIM_SIZE; i++)
-        {
-            free(world[i]);
-            free(newWorld[i]);
-        }
+    for (i = 0; i < SIM_SIZE; i++)
+    {
+        free(world[i]);
+        free(newWorld[i]);
+    }
 
     return 0;
 }
