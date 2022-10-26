@@ -21,11 +21,11 @@ void initialize_world(CELL **world, CELL **newWorld){
             }
             world[i][j].status = cell_status;
             newWorld[i][j] = world[i][j];
-            #if (DEBUG > 2)
+            #if (DEBUG > 0)
                 printf("%2c.%2d ", newWorld[i][j].status, newWorld[i][j].duration);
             #endif
         }
-        #if (DEBUG > 2)
+        #if (DEBUG > 0)
             printf("\n");
         #endif
     }

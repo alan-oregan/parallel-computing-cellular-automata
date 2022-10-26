@@ -29,7 +29,7 @@
 #define OUTPUT_FILE_DIR     "output"
 
 // macros for #if statements
-#define DEBUG               0 // greater than 2 for debug
+#define DEBUG               0 // 1, 2, 3
 #define GENERATION_OUTPUT   1 // 1 for showing the generation number as the program runs
 
 // data structures

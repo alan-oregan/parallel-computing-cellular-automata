@@ -40,7 +40,7 @@ void output_to_file(CELL **world, int iteration, FILE *population_file){
             }
             fprintf(dat_file, "%c", cell_status);
             #if (DEBUG > 2)
-                printf("%2c ", cell_status);
+                printf("%2d ", cell_status);
             #endif
         }
         fprintf(dat_file, "\n");
