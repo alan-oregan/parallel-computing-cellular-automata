@@ -22,5 +22,6 @@ clean:
 clean-win:
 	del simulation*
 	del *.o
-	rmdir -R output
+	del -R output
+	rmdir output
 	del *.csv
