@@ -54,3 +54,7 @@ dkms.conf
 # data files
 *.csv
 *.dat
+
+# data folders
+parallel/output/
+serial/output/
