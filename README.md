@@ -116,4 +116,4 @@ RETURN 0
 
 ## Flowchart
 
-![Flowchart of pseudocode](/Flowchart.drawio.png)
+![Flowchart of serial pseudocode](/serial/Flowchart.drawio.png)
