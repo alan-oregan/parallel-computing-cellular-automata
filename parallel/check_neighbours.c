@@ -17,11 +17,11 @@ float check_neighbours(CELL **world, int row, int col) {
         }
 
         #if (DEBUG > 2)
-            printf("%2d ", neighbour)
+            printf("%2c ", neighbour);
         #endif
     }
     #if (DEBUG > 2)
-        printf("Chance: %d\n", chance)
+        printf("Chance: %c\n", chance);
     #endif
 
     return chance;

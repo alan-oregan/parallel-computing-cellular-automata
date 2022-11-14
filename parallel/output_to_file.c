@@ -1,25 +1,21 @@
 #include <stdio.h>
 #include "declarations.h"
 
-int population_susceptible = 0;
-int population_exposed = 0;
-int population_infected = 0;
-int population_removed = 0;
-
-char fileNameBuffer[100];
-FILE *dat_file;
-
 void output_to_file(CELL **world, int iteration, FILE *population_file){
 
-    sprintf(fileNameBuffer, "%s\\world_%d.dat", OUTPUT_FILE_DIR, iteration);
+    int population_susceptible = 0;
+    int population_exposed = 0;
+    int population_infected = 0;
+    int population_removed = 0;
 
+    char fileNameBuffer[100];
+    FILE *dat_file;
+
+    sprintf(fileNameBuffer, "output/world_%d.dat", iteration);
     dat_file = fopen(fileNameBuffer, "w");
+
     int i, j;
     signed char cell_status;
-    population_susceptible = 0;
-    population_exposed = 0;
-    population_infected = 0;
-    population_removed = 0;
 
     for (i = 0; i < SIM_SIZE; i++) {
         for (j = 0; j < SIM_SIZE; j++) {
@@ -40,7 +36,7 @@ void output_to_file(CELL **world, int iteration, FILE *population_file){
             }
             fprintf(dat_file, "%c", cell_status);
             #if (DEBUG > 2)
-                printf("%2d ", cell_status);
+                printf("%c ", cell_status);
             #endif
         }
         fprintf(dat_file, "\n");
