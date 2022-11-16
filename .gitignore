@@ -58,3 +58,7 @@ dkms.conf
 # data folders
 parallel/output/
 serial/output/
+
+# executables
+parallel/simulation*
+serial/simulation*

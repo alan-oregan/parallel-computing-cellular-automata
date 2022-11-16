@@ -28,7 +28,7 @@
 
 #define OUTPUT_FILE_DIR     "output"
 
-// macros for #if statements
+// macros for #if debug statements
 #define DEBUG               0 // 1, 2, 3
 #define GENERATION_OUTPUT   1 // 1 for showing the generation number as the program runs
 
