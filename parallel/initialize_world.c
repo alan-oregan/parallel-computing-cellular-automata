@@ -11,7 +11,7 @@ void initialize_world(CELL **world, CELL **newWorld){
         newWorld[i] = (CELL *)malloc(SIM_SIZE*sizeof(CELL));
     }
 
-    // initilise values to 0
+    // initialise values to 0
     for (i = 0; i < SIM_SIZE; i++) {
         for (j = 0; j < SIM_SIZE; j++) {
             world[i][j].duration = 0;
