@@ -11,9 +11,9 @@ float check_neighbours(CELL **world, int row, int col) {
         neighbour = world[(row + row_offset[i] % SIM_SIZE + SIM_SIZE) % SIM_SIZE][(col + col_offset[i] % SIM_SIZE + SIM_SIZE) % SIM_SIZE];
 
         if (neighbour.status == EXPOSED) {
-            chance += EXPOSED_INFECTION_CHANCE;
+            chance += BASE_CHANCE + EXPOSED_INFECTION_CHANCE;
         } else if (neighbour.status == INFECTED) {
-            chance += INFECTED_INFECTION_CHANCE;
+            chance += BASE_CHANCE + INFECTED_INFECTION_CHANCE;
         }
 
         #if (DEBUG > 2)

@@ -9,16 +9,17 @@
 #define INITIAL_EXPOSED_NUMBER  1
 
 #define SIM_SIZE            1000
-#define GEN_LENGTH          100
-#define OUTPUT_SAMPLE_SIZE  10
+#define GEN_LENGTH          1000
+#define OUTPUT_SAMPLE_SIZE  100
 
 #define SUSCEPTIBLE         'S'
 #define EXPOSED             'E'
 #define INFECTED            'I'
 #define REMOVED             'R'
 
-#define EXPOSED_INFECTION_CHANCE    0.0625
-#define INFECTED_INFECTION_CHANCE   0.125
+#define BASE_CHANCE                 0.90
+#define EXPOSED_INFECTION_CHANCE    0.00625
+#define INFECTED_INFECTION_CHANCE   0.0125
 
 #define EXPOSED_DURATION    7
 #define INFECTED_DURATION   10

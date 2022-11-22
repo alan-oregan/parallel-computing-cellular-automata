@@ -1,11 +1,11 @@
-#include "declarations.h"
+#include "../common/declarations.h"
 
-// todo move to declarations
-// const int MAX_THREADS = 1024;
+// TODO move to declarations
+const int MAX_THREADS = 1024;
 
-// long thread_count;
-// long long n;
-// double sum;
+long thread_count;
+long long n;
+double sum;
 
 int main() {
     int i;
