@@ -32,9 +32,6 @@ int main() {
                         if ((float)rand()/(float)RAND_MAX < chance) {
                             newWorld[row][col].status = EXPOSED;
                             newWorld[row][col].duration = 0;
-                        } else {
-                            newWorld[row][col].status = SUSCEPTIBLE;
-                            newWorld[row][col].duration = 0;
                         }
                         break;
 
@@ -60,6 +57,7 @@ int main() {
                         break;
                 }
 
+                // Everything has a duration except for SUSCEPTIBLE
                 if (world[row][col].status != SUSCEPTIBLE) {
                     newWorld[row][col].duration++;
                 }

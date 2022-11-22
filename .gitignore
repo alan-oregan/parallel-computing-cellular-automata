@@ -62,3 +62,7 @@ serial/output/
 # executables
 parallel/simulation*
 serial/simulation*
+.vscode/tasks.json
+
+# compiled files
+*.class
