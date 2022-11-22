@@ -12,7 +12,7 @@ class Visualisation extends JFrame {
     // move to JPanel component https://stackoverflow.com/questions/21121859/how-to-paint-on-a-jpanel 
 
     public Visualisation() {
-        currentWorld = readLetterCount("output/world_400.dat");
+        currentWorld = readLetterCount("../output/world_400.dat");
 
         //jFrame
         this.setResizable(false);
