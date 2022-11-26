@@ -1,8 +1,7 @@
 #include "declarations.h"
 
-CELL neighbour;
-
 float check_neighbours(CELL **world, int row, int col) {
+    CELL neighbour;
     float chance = 0.0;
     int row_offset[8] = { 0,  0, -1,  1,  1,  1, -1, -1};
     int col_offset[8] = {-1,  1,  0,  0, -1,  1, -1,  1};

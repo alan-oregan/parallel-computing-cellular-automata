@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "declarations.h"
 
 void output_to_file(CELL **world, int iteration, FILE *population_file){
@@ -11,8 +10,12 @@ void output_to_file(CELL **world, int iteration, FILE *population_file){
     char fileNameBuffer[100];
     FILE *dat_file;
 
-    sprintf(fileNameBuffer, "output/world_%d.dat", iteration);
+    sprintf(fileNameBuffer, "%s/world_%d.dat", OUTPUT_FILE_DIR, iteration);
     dat_file = fopen(fileNameBuffer, "w");
+
+    if (dat_file == NULL) {
+        printf("Error creating '%s' does %s exist", fileNameBuffer, OUTPUT_FILE_DIR);
+    }
 
     int i, j;
     signed char cell_status;

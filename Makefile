@@ -16,10 +16,10 @@ common/output_to_file.o: common/output_to_file.c
 	$(CC) -c $? -o $@
 
 clean:
-	rm -R simulation_*
-	rm -R *.o
-	rm -R *.dat
-	rm -R *.csv
+	rm -rfv simulation_*
+	rm -rfv common/*.o
+	rm -rfv output/*.dat
+	rm -rfv *.csv
 
 clean-win:
 	del /s /q simulation_*

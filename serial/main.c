@@ -7,6 +7,10 @@ int main() {
 
     FILE *population_file = fopen("population.csv", "w");
 
+    if (population_file == NULL) {
+        printf("Error creating population.csv");
+    }
+
     srand((unsigned int)time(NULL));
 
     // add header to csv
@@ -14,6 +18,10 @@ int main() {
 
     // initialise world
     initialize_world(world, newWorld);
+
+    #if (GENERATION_OUTPUT == 1)
+        printf("\rGeneration %d/%d", 0, GEN_LENGTH-1);
+    #endif
 
     // output generation 0
     output_to_file(world, 0, population_file);
@@ -75,18 +83,14 @@ int main() {
         }
 
         #if (GENERATION_OUTPUT == 1)
-            printf("Iteration %d/%d\r", generation, GEN_LENGTH);
+            printf("\rGeneration %d/%d", generation, GEN_LENGTH-1);
         #endif
     }
 
     // output final generation regardless of sample size
-    output_to_file(newWorld, generation, population_file);
+    output_to_file(newWorld, GEN_LENGTH, population_file);
 
-    #if (GENERATION_OUTPUT == 1)
-        printf("Iteration %d/%d\n", generation, GEN_LENGTH);
-    #endif
-
-    printf("See /output and population.csv for output\n");
+    printf("\nSee /output directory and population.csv file for output\n");
 
     // close files and free memory
     fclose(population_file);

@@ -1,8 +1,5 @@
 #include "../common/declarations.h"
 
-int n;
-double sum;
-
 FILE *population_file;
 
 CELL *world[SIM_SIZE];
@@ -23,23 +20,19 @@ void* thread_func(void* rank) {
     float chance;
     int generation, row, col;
     int i;
-
-    printf("Thread %d Begin!\tProcessing Rows: %d - %d\n", threadRank, startIndex, lastIndex);
-
+    #if (PARALLEL_DEBUG > 3)
+        printf("\nThread %d: Begin!\tProcessing Rows: %d - %d for %d generations\n", threadRank, startIndex, lastIndex, GEN_LENGTH);
+    #endif
     for (generation = 1; generation < GEN_LENGTH; generation++) {
 
         for (row = startIndex; row < lastIndex; row++) {
             for (col = 0; col < SIM_SIZE; col++) {
-
                 switch (world[row][col].status) {
                     case SUSCEPTIBLE:
                         chance = check_neighbours(world, row, col);
 
                         if ((float)rand()/(float)RAND_MAX < chance) {
                             newWorld[row][col].status = EXPOSED;
-                            newWorld[row][col].duration = 0;
-                        } else {
-                            newWorld[row][col].status = SUSCEPTIBLE;
                             newWorld[row][col].duration = 0;
                         }
                         break;
@@ -66,17 +59,23 @@ void* thread_func(void* rank) {
                         break;
                 }
 
+                // Everything has a duration except for SUSCEPTIBLE
                 if (world[row][col].status != SUSCEPTIBLE) {
                     newWorld[row][col].duration++;
                 }
             }
         }
 
-        printf("Thread: %d finished generation: %d, Counter: %d\n", threadRank, generation, thread_completion_counter);
+        #if (PARALLEL_DEBUG > 4)
+            printf("Thread %d: finished generation: %d, Counter: %d\n", threadRank, generation, thread_completion_counter);
+        #endif
 
         pthread_mutex_lock(&mutex); // lock while checking if output possible
         thread_completion_counter++; // count the thread as finished
-        printf("Thread: %d inside critical section, Counter: %d\n", threadRank, thread_completion_counter);
+
+        #if (PARALLEL_DEBUG > 5)
+            printf("Thread %d: inside critical section, Counter: %d\n", threadRank, thread_completion_counter);
+        #endif
 
         // if this is the last thread to finish then output to file
         if (thread_completion_counter == THREAD_COUNT) {
@@ -96,18 +95,24 @@ void* thread_func(void* rank) {
 
             // output generation progress
             #if (GENERATION_OUTPUT == 1)
-                printf("Iteration %d/%d\r", generation, GEN_LENGTH);
+                printf("\rGeneration %d/%d, Thread: %d", generation, GEN_LENGTH-1, threadRank);
             #endif
 
         } else {
-                printf("Thread %d waiting for other threads\n", threadRank);
-                // busy wait until all threads have completed and output occurs
-                while (pthread_cond_wait(&condition, &mutex) != 0);
+            #if (PARALLEL_DEBUG > 6)
+                printf("Thread %d: Waiting for other threads to finish\n", threadRank);
+            #endif
+
+            // busy wait until all threads have completed and output occurs
+            while (pthread_cond_wait(&condition, &mutex) != 0);
         }
 
         // unlock mutex as output has been completed
         pthread_mutex_unlock(&mutex);
     }
+    #if (PARALLEL_DEBUG > 3)
+        printf("\nThread %d: End!\tProcessed Rows: %d - %d for %d generations\n", threadRank, startIndex, lastIndex, GEN_LENGTH);
+    #endif
 }
 
 int main() {
@@ -115,6 +120,10 @@ int main() {
     // initialise global variables
     thread_completion_counter = 0;
     population_file = fopen("population.csv", "w");
+
+    if (population_file == NULL) {
+        printf("Error creating population.csv");
+    }
 
     // initialise local variables
     int i;
@@ -131,6 +140,10 @@ int main() {
     // initialise world
     initialize_world(world, newWorld);
 
+    #if (GENERATION_OUTPUT == 1)
+        printf("\rGeneration %d/%d", 0, GEN_LENGTH-1);
+    #endif
+
     // output generation 0
     output_to_file(world, 0, population_file);
 
@@ -142,7 +155,10 @@ int main() {
     for (thread = 0; thread < THREAD_COUNT; thread++)
         pthread_join(thread_handles[thread], NULL);
 
-    printf("See /output and population.csv for output\n");
+    // output final generation regardless of sample size
+    output_to_file(newWorld, GEN_LENGTH, population_file);
+
+    printf("\nSee /output directory and population.csv file for output\n");
 
     // close files and free memory
     fclose(population_file);
@@ -155,8 +171,6 @@ int main() {
         free(world[i]);
         free(newWorld[i]);
     }
-
-    free(thread_handles);
 
     return 0;
 }
