@@ -16,12 +16,12 @@ float check_neighbours(CELL **world, int row, int col) {
             chance += BASE_CHANCE + INFECTED_INFECTION_CHANCE;
         }
 
-        #if (DEBUG > 2)
-            printf("%2c ", neighbour);
+        #if (DEBUG > 0)
+            printf("%2c ", neighbour.status);
         #endif
     }
-    #if (DEBUG > 2)
-        printf("Chance: %c\n", chance);
+    #if (DEBUG > 0)
+        printf("Chance: %f\n", chance);
     #endif
 
     return chance;

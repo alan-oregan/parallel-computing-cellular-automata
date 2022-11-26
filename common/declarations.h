@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <pthread.h>
+#include <stdbool.h>
 
 // macros
 #define INITIAL_INFECTION_ROW   0
@@ -11,6 +13,9 @@
 #define SIM_SIZE            1000
 #define GEN_LENGTH          1000
 #define OUTPUT_SAMPLE_SIZE  100
+
+// parallel
+#define THREAD_COUNT         8
 
 #define SUSCEPTIBLE         'S'
 #define EXPOSED             'E'
@@ -29,14 +34,21 @@
 
 #define OUTPUT_FILE_DIR     "output"
 
-// macros for #if debug statements
-#define DEBUG               0 // 1, 2, 3
-#define GENERATION_OUTPUT   1 // 1 for showing the generation number as the program runs
+// 0 - no debug,
+// 1 - check_neighbour debug,
+// 2 - Initialize_world debug,
+// 3 - output_to_file debug
+#define DEBUG               0
+
+// 0 - For no program output
+// 1 - For showing the generation number as the program runs
+#define GENERATION_OUTPUT   1
 
 // data structures
 typedef struct cell {
     signed char status;
     signed char duration;
+    bool isChanged;
 } CELL;
 
 // Function prototypes

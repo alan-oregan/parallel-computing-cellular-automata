@@ -1,14 +1,14 @@
 #include "declarations.h"
 
-void initialize_world(CELL **world, CELL **newWorld){
+void initialize_world(CELL** world, CELL** newWorld){
 
     int i, j;
     unsigned char cell_status;
 
     // assign memory with malloc
     for(i = 0; i < SIM_SIZE; i++){
-        world[i] = (CELL *)malloc(SIM_SIZE*sizeof(CELL));
-        newWorld[i] = (CELL *)malloc(SIM_SIZE*sizeof(CELL));
+        world[i] = (CELL*)malloc(SIM_SIZE*sizeof(CELL));
+        newWorld[i] = (CELL*)malloc(SIM_SIZE*sizeof(CELL));
     }
 
     // initialise values to 0
@@ -21,11 +21,11 @@ void initialize_world(CELL **world, CELL **newWorld){
             }
             world[i][j].status = cell_status;
             newWorld[i][j] = world[i][j];
-            #if (DEBUG > 0)
+            #if (DEBUG > 1)
                 printf("%2c.%2d ", newWorld[i][j].status, newWorld[i][j].duration);
             #endif
         }
-        #if (DEBUG > 0)
+        #if (DEBUG > 1)
             printf("\n");
         #endif
     }

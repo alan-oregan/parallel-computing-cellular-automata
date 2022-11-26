@@ -1,7 +1,7 @@
 CC=gcc
 
 simulation_p: common/initialize_world.o common/check_neighbours.o common/output_to_file.o parallel/main.c
-	$(CC) $? -o $@
+	$(CC) -pthread $? -o $@
 
 simulation_s: common/initialize_world.o common/check_neighbours.o common/output_to_file.o serial/main.c
 	$(CC) $? -o $@
