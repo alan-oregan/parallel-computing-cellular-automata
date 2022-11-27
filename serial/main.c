@@ -33,11 +33,10 @@ int main() {
     output_to_file(world, 0, population_file);
 
     float chance;
-    float exposureChance;
+    float exposureChance = (float)rand() / (float)RAND_MAX;
     int generation, row, col;
 
     for (generation = 1; generation < GEN_LENGTH; generation++) {
-        exposureChance = (float)rand() / (float)RAND_MAX;
         for (row = 0; row < SIM_SIZE; row++) {
             for (col = 0; col < SIM_SIZE; col++) {
                 switch (world[row][col].status) {
@@ -90,20 +89,21 @@ int main() {
         }
 
         #if (GENERATION_OUTPUT)
-            printf("\rGeneration %d/%d", generation, GEN_LENGTH-1);
+            printf("\rGeneration %d/%d, Exposure chance: %f", generation, GEN_LENGTH-1, exposureChance);
         #endif
+
+        exposureChance = (float)rand() / (float)RAND_MAX;
     }
 
     // output final generation regardless of sample size
     output_to_file(newWorld, GEN_LENGTH, population_file);
 
-    printf("\nSee /output directory and population.csv file for output\n");
+    printf("\nSee /output directory and population.csv file for results\n");
 
     // close files and free memory
     fclose(population_file);
 
-    for (row = 0; row < SIM_SIZE; row++)
-    {
+    for (row = 0; row < SIM_SIZE; row++) {
         free(world[row]);
         free(newWorld[row]);
     }

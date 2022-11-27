@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <pthread.h>
 #include "timer.h"
 
 // starting row and number of initial infections for generation 0
@@ -67,7 +66,6 @@ typedef struct cell {
     signed char status;
     signed char duration;
 } CELL;
-
 
 // Function prototypes
 void initialize_world(CELL**, CELL**);

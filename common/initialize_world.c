@@ -7,8 +7,8 @@ void initialize_world(CELL** world, CELL** newWorld){
 
     // assign memory with malloc
     for(i = 0; i < SIM_SIZE; i++){
-        world[i] = (CELL*)malloc(SIM_SIZE*sizeof(CELL));
-        newWorld[i] = (CELL*)malloc(SIM_SIZE*sizeof(CELL));
+        world[i] = malloc(SIM_SIZE*sizeof(CELL));
+        newWorld[i] = malloc(SIM_SIZE*sizeof(CELL));
     }
 
     // initialise values to 0

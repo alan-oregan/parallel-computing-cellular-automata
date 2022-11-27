@@ -1,3 +1,4 @@
+#include <pthread.h>
 #include "../common/declarations.h"
 
 FILE *population_file;
@@ -9,6 +10,8 @@ int thread_completion_counter;
 pthread_mutex_t mutex;
 pthread_cond_t condition;
 
+float exposureChance;
+
 void* thread_func(void* rank) {
     int threadRank = (int) rank;
 
@@ -17,15 +20,12 @@ void* thread_func(void* rank) {
     int startIndex = totalThreadCells * threadRank;
     int lastIndex = startIndex + totalThreadCells;
 
-    float exposureChance;
-
     float chance;
     int generation, row, col;
     #if (PARALLEL_DEBUG > 0)
         printf("\nThread %d: Begin! Processing Rows:\t%d - %d for %d generations\n", threadRank, startIndex, lastIndex, GEN_LENGTH-1);
     #endif
     for (generation = 1; generation < GEN_LENGTH; generation++) {
-        exposureChance = (float)rand() / (float)RAND_MAX;
         for (row = startIndex; row < lastIndex; row++) {
             for (col = 0; col < SIM_SIZE; col++) {
                 switch (world[row][col].status) {
@@ -108,6 +108,8 @@ void* thread_func(void* rank) {
             while (pthread_cond_wait(&condition, &mutex) != 0);
         }
 
+        exposureChance = (float)rand() / (float)RAND_MAX;
+
         // unlock mutex as output has been completed
         pthread_mutex_unlock(&mutex);
     }
@@ -130,6 +132,7 @@ int main() {
 
     // initialise global variables
     thread_completion_counter = 0;
+    exposureChance = (float)rand() / (float)RAND_MAX;
     population_file = fopen("population.csv", "w");
 
     if (population_file == NULL) {
@@ -143,6 +146,7 @@ int main() {
 
     pthread_t* thread_handles = (pthread_t*) malloc(THREAD_COUNT*sizeof(pthread_t));
     pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&condition, NULL);
 
     srand((unsigned int)time(NULL));
 
@@ -170,13 +174,14 @@ int main() {
     // output final generation regardless of sample size
     output_to_file(newWorld, GEN_LENGTH, population_file);
 
-    printf("\nSee /output directory and population.csv file for output\n");
+    printf("\nSee /output directory and population.csv file for results\n");
 
     // close files and free memory
     fclose(population_file);
 
     free(thread_handles);
     pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&condition);
 
     for (row = 0; row < SIM_SIZE; row++)
     {
