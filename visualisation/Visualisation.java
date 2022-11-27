@@ -3,27 +3,17 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 class Visualisation extends JFrame {
 
     private final int WORLDSIZE = 1000;
-    private char[][] currentWorld;
+    private File[] worldFiles;
 
     // move to JPanel component https://stackoverflow.com/questions/21121859/how-to-paint-on-a-jpanel
 
     public Visualisation() {
-        currentWorld = readDatFile("../output/world_10.dat");
-
-        // File folder = new File("your/path");
-        // File[] listOfFiles = folder.listFiles();
-
-        // for (int i = 0; i < listOfFiles.length; i++) {
-        //     if (listOfFiles[i].isFile()) {
-        //         System.out.println("File " + listOfFiles[i].getName());
-        //     } else if (listOfFiles[i].isDirectory()) {
-        //         System.out.println("Directory " + listOfFiles[i].getName());
-        //     }
-        // }
+        worldFiles = new File("../output").listFiles();
 
         //jFrame
         this.setResizable(false);
@@ -52,27 +42,37 @@ class Visualisation extends JFrame {
 
     public void paint(Graphics g) {
         super.paint(g);
-        this.paintWorld(g, currentWorld);
+        this.paintWorld(g);
     }
 
-    public void paintWorld(Graphics g, char[][] world) {
+    public void paintWorld(Graphics g) {
         g.setColor(Color.ORANGE);
         g.fillRect(10, 0, WORLDSIZE, WORLDSIZE);
 
-        for (int i = 0; i < world.length; i++) {
-            for (int j = 0; j < world[0].length; j++)
-            {
-                g.setColor(
-                    switch (world[i][j]) {
-                        case 'S' -> Color.ORANGE;
-                        case 'E' -> Color.BLUE;
-                        case 'I' -> Color.MAGENTA;
-                        case 'R' -> Color.GREEN;
-                        default -> Color.RED;
-                    }
-                );
+        for (File worldFile : worldFiles) {
+            System.out.printf("Visualising %s...\n", worldFile.getName());
+            runVisualisation(g, readDatFile(worldFile.getPath()));
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-                g.fillRect(i+2, j, 4, 4);
+    public void runVisualisation(Graphics g, char[][] world) {
+        for (int i = 0; i < world[0].length; i++) {
+            for (int j = 0; j < world.length; j++) {
+                g.setColor(
+                        switch (world[i][j]) {
+                            case 'S' -> Color.ORANGE;
+                            case 'E' -> Color.BLUE;
+                            case 'I' -> Color.MAGENTA;
+                            case 'R' -> Color.GREEN;
+                            default -> Color.RED;
+                        });
+
+                g.fillRect(i + 2, j, 4, 4);
             }
         }
     }
