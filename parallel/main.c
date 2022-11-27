@@ -17,21 +17,22 @@ void* thread_func(void* rank) {
     int startIndex = totalThreadCells * threadRank;
     int lastIndex = startIndex + totalThreadCells;
 
+    float exposureChance;
+
     float chance;
     int generation, row, col;
-    int i;
-    #if (PARALLEL_DEBUG > 3)
-        printf("\nThread %d: Begin!\tProcessing Rows: %d - %d for %d generations\n", threadRank, startIndex, lastIndex, GEN_LENGTH);
+    #if (PARALLEL_DEBUG > 0)
+        printf("\nThread %d: Begin! Processing Rows:\t%d - %d for %d generations\n", threadRank, startIndex, lastIndex, GEN_LENGTH-1);
     #endif
     for (generation = 1; generation < GEN_LENGTH; generation++) {
-
+        exposureChance = (float)rand() / (float)RAND_MAX;
         for (row = startIndex; row < lastIndex; row++) {
             for (col = 0; col < SIM_SIZE; col++) {
                 switch (world[row][col].status) {
                     case SUSCEPTIBLE:
                         chance = check_neighbours(world, row, col);
 
-                        if ((float)rand()/(float)RAND_MAX < chance) {
+                        if (exposureChance < chance) {
                             newWorld[row][col].status = EXPOSED;
                             newWorld[row][col].duration = 0;
                         }
@@ -66,15 +67,15 @@ void* thread_func(void* rank) {
             }
         }
 
-        #if (PARALLEL_DEBUG > 4)
-            printf("Thread %d: finished generation: %d, Counter: %d\n", threadRank, generation, thread_completion_counter);
+        #if (PARALLEL_DEBUG > 1)
+            printf("Thread %d: Finished generation: %d, Counter: %d\n", threadRank, generation, thread_completion_counter);
         #endif
 
         pthread_mutex_lock(&mutex); // lock while checking if output possible
         thread_completion_counter++; // count the thread as finished
 
-        #if (PARALLEL_DEBUG > 5)
-            printf("Thread %d: inside critical section, Counter: %d\n", threadRank, thread_completion_counter);
+        #if (PARALLEL_DEBUG > 2)
+            printf("Thread %d: Inside critical section, Counter: %d\n", threadRank, thread_completion_counter);
         #endif
 
         // if this is the last thread to finish then output to file
@@ -89,17 +90,17 @@ void* thread_func(void* rank) {
             }
 
             // update world with newWorld
-            for(i = 0; i < SIM_SIZE; i++){
-                memcpy(world[i], newWorld[i], SIM_SIZE*sizeof(CELL));
+            for(row = 0; row < SIM_SIZE; row++){
+                memcpy(world[row], newWorld[row], SIM_SIZE*sizeof(CELL));
             }
 
             // output generation progress
-            #if (GENERATION_OUTPUT == 1)
-                printf("\rGeneration %d/%d, Thread: %d", generation, GEN_LENGTH-1, threadRank);
+            #if (GENERATION_OUTPUT)
+                printf("\rGeneration %d/%d, Thread: %d, Exposure chance: %f", generation, GEN_LENGTH-1, threadRank, exposureChance);
             #endif
 
         } else {
-            #if (PARALLEL_DEBUG > 6)
+            #if (PARALLEL_DEBUG > 3)
                 printf("Thread %d: Waiting for other threads to finish\n", threadRank);
             #endif
 
@@ -110,23 +111,34 @@ void* thread_func(void* rank) {
         // unlock mutex as output has been completed
         pthread_mutex_unlock(&mutex);
     }
-    #if (PARALLEL_DEBUG > 3)
-        printf("\nThread %d: End!\tProcessed Rows: %d - %d for %d generations\n", threadRank, startIndex, lastIndex, GEN_LENGTH);
+    #if (PARALLEL_DEBUG > 0)
+        printf("\nThread %d: End!\tProcessed Rows: %d - %d for %d generations\n", threadRank, startIndex, lastIndex, GEN_LENGTH-1);
     #endif
 }
 
 int main() {
+
+    #if (TIMER)
+        double start, finish, elapsed;
+        GET_TIME(start);
+    #endif
+
+    if (SIM_SIZE % THREAD_COUNT != 0) {
+        printf("Error: defined THREAD_COUNT '%d' not a factor of defined SIM_SIZE '%d'\n", THREAD_COUNT, SIM_SIZE);
+        exit(1);
+    }
 
     // initialise global variables
     thread_completion_counter = 0;
     population_file = fopen("population.csv", "w");
 
     if (population_file == NULL) {
-        printf("Error creating population.csv");
+        printf("Error: creating population.csv");
+        exit(1);
     }
 
     // initialise local variables
-    int i;
+    int row;
     int thread;
 
     pthread_t* thread_handles = (pthread_t*) malloc(THREAD_COUNT*sizeof(pthread_t));
@@ -140,7 +152,7 @@ int main() {
     // initialise world
     initialize_world(world, newWorld);
 
-    #if (GENERATION_OUTPUT == 1)
+    #if (GENERATION_OUTPUT)
         printf("\rGeneration %d/%d", 0, GEN_LENGTH-1);
     #endif
 
@@ -148,9 +160,9 @@ int main() {
     output_to_file(world, 0, population_file);
 
     // create threads
-    for (thread = 0; thread < THREAD_COUNT; thread++)
-        pthread_create(&thread_handles[thread], NULL, thread_func, (void*)thread);
-
+    for (thread = 0; thread < THREAD_COUNT; thread++) {
+        pthread_create(&thread_handles[thread], NULL, thread_func, (void *)thread);
+    }
     // wait for all threads to finish
     for (thread = 0; thread < THREAD_COUNT; thread++)
         pthread_join(thread_handles[thread], NULL);
@@ -166,11 +178,18 @@ int main() {
     free(thread_handles);
     pthread_mutex_destroy(&mutex);
 
-    for (i = 0; i < SIM_SIZE; i++)
+    for (row = 0; row < SIM_SIZE; row++)
     {
-        free(world[i]);
-        free(newWorld[i]);
+        free(world[row]);
+        free(newWorld[row]);
     }
+
+    #if (TIMER)
+        GET_TIME(finish);
+
+        elapsed = finish - start;
+        printf("The code to be timed took %lf seconds\n", elapsed);
+    #endif
 
     return 0;
 }

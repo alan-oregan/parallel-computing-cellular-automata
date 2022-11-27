@@ -9,10 +9,21 @@ class Visualisation extends JFrame {
     private final int WORLDSIZE = 1000;
     private char[][] currentWorld;
 
-    // move to JPanel component https://stackoverflow.com/questions/21121859/how-to-paint-on-a-jpanel 
+    // move to JPanel component https://stackoverflow.com/questions/21121859/how-to-paint-on-a-jpanel
 
     public Visualisation() {
-        currentWorld = readLetterCount("../output/world_400.dat");
+        currentWorld = readDatFile("../output/world_10.dat");
+
+        // File folder = new File("your/path");
+        // File[] listOfFiles = folder.listFiles();
+
+        // for (int i = 0; i < listOfFiles.length; i++) {
+        //     if (listOfFiles[i].isFile()) {
+        //         System.out.println("File " + listOfFiles[i].getName());
+        //     } else if (listOfFiles[i].isDirectory()) {
+        //         System.out.println("Directory " + listOfFiles[i].getName());
+        //     }
+        // }
 
         //jFrame
         this.setResizable(false);
@@ -22,7 +33,7 @@ class Visualisation extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE); // stop the program on close
     }
 
-    private char[][] readLetterCount(String filePath) {
+    private char[][] readDatFile(String filePath) {
         char[][] world = new char[WORLDSIZE][WORLDSIZE];
 
         try {
@@ -45,7 +56,7 @@ class Visualisation extends JFrame {
     }
 
     public void paintWorld(Graphics g, char[][] world) {
-        g.setColor(Color.GREEN);
+        g.setColor(Color.ORANGE);
         g.fillRect(10, 0, WORLDSIZE, WORLDSIZE);
 
         for (int i = 0; i < world.length; i++) {
@@ -53,11 +64,11 @@ class Visualisation extends JFrame {
             {
                 g.setColor(
                     switch (world[i][j]) {
-                        case 'S' -> Color.GREEN;
+                        case 'S' -> Color.ORANGE;
                         case 'E' -> Color.BLUE;
                         case 'I' -> Color.MAGENTA;
-                        case 'R' -> Color.ORANGE;
-                        default -> Color.BLUE;
+                        case 'R' -> Color.GREEN;
+                        default -> Color.RED;
                     }
                 );
 

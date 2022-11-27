@@ -1,14 +1,20 @@
 #include "../common/declarations.h"
 
 int main() {
-    int i;
+
+    #if (TIMER)
+        double start, finish, elapsed;
+        GET_TIME(start);
+    #endif
+
     CELL *world[SIM_SIZE];
     CELL *newWorld[SIM_SIZE];
 
     FILE *population_file = fopen("population.csv", "w");
 
     if (population_file == NULL) {
-        printf("Error creating population.csv");
+        printf("Error: creating population.csv");
+        exit(1);
     }
 
     srand((unsigned int)time(NULL));
@@ -19,7 +25,7 @@ int main() {
     // initialise world
     initialize_world(world, newWorld);
 
-    #if (GENERATION_OUTPUT == 1)
+    #if (GENERATION_OUTPUT)
         printf("\rGeneration %d/%d", 0, GEN_LENGTH-1);
     #endif
 
@@ -27,17 +33,18 @@ int main() {
     output_to_file(world, 0, population_file);
 
     float chance;
+    float exposureChance;
     int generation, row, col;
 
     for (generation = 1; generation < GEN_LENGTH; generation++) {
-
+        exposureChance = (float)rand() / (float)RAND_MAX;
         for (row = 0; row < SIM_SIZE; row++) {
             for (col = 0; col < SIM_SIZE; col++) {
                 switch (world[row][col].status) {
                     case SUSCEPTIBLE:
                         chance = check_neighbours(world, row, col);
 
-                        if ((float)rand()/(float)RAND_MAX < chance) {
+                        if (exposureChance < chance) {
                             newWorld[row][col].status = EXPOSED;
                             newWorld[row][col].duration = 0;
                         }
@@ -78,11 +85,11 @@ int main() {
         }
 
         // update world with newWorld
-        for(i = 0; i < SIM_SIZE; i++){
-            memcpy(world[i], newWorld[i], SIM_SIZE*sizeof(CELL));
+        for(row = 0; row < SIM_SIZE; row++){
+            memcpy(world[row], newWorld[row], SIM_SIZE*sizeof(CELL));
         }
 
-        #if (GENERATION_OUTPUT == 1)
+        #if (GENERATION_OUTPUT)
             printf("\rGeneration %d/%d", generation, GEN_LENGTH-1);
         #endif
     }
@@ -95,11 +102,18 @@ int main() {
     // close files and free memory
     fclose(population_file);
 
-    for (i = 0; i < SIM_SIZE; i++)
+    for (row = 0; row < SIM_SIZE; row++)
     {
-        free(world[i]);
-        free(newWorld[i]);
+        free(world[row]);
+        free(newWorld[row]);
     }
+
+    #if (TIMER)
+        GET_TIME(finish);
+
+        elapsed = finish - start;
+        printf("The code to be timed took %lf seconds\n", elapsed);
+    #endif
 
     return 0;
 }

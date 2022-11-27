@@ -14,7 +14,8 @@ void output_to_file(CELL **world, int iteration, FILE *population_file){
     dat_file = fopen(fileNameBuffer, "w");
 
     if (dat_file == NULL) {
-        printf("Error creating '%s' does %s exist", fileNameBuffer, OUTPUT_FILE_DIR);
+        printf("\nError: creating '%s' does %s exist\n", fileNameBuffer, OUTPUT_FILE_DIR);
+        exit(1);
     }
 
     int i, j;
