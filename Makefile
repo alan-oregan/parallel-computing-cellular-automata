@@ -1,6 +1,9 @@
 CC=gcc
 
-all: simulation_p simulation_s
+all: simulation_p simulation_s | output
+
+output:
+	mkdir output
 
 simulation_p: common/initialize_world.o common/check_neighbours.o common/output_to_file.o parallel/main.c
 	$(CC) -pthread $? -o $@

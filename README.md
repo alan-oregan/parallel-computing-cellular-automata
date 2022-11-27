@@ -117,3 +117,7 @@ RETURN 0
 ## Flowchart
 
 ![Flowchart of serial pseudocode](/serial/Flowchart.drawio.png)
+
+## Sources
+
+[Make file | operator](https://stackoverflow.com/a/6170280)
