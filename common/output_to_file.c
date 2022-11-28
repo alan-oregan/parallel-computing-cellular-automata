@@ -1,6 +1,6 @@
 #include "declarations.h"
 
-void output_to_file(CELL **world, int iteration, FILE *population_file){
+void output_to_file(CELL **world, int generation, FILE *population_file){
 
     int population_susceptible = 0;
     int population_exposed = 0;
@@ -10,7 +10,7 @@ void output_to_file(CELL **world, int iteration, FILE *population_file){
     char fileNameBuffer[100];
     FILE *dat_file;
 
-    sprintf(fileNameBuffer, "%s/world_%d.dat", OUTPUT_FILE_DIR, iteration);
+    sprintf(fileNameBuffer, "%s/world_%d.dat", OUTPUT_FILE_DIR, generation);
     dat_file = fopen(fileNameBuffer, "w");
 
     if (dat_file == NULL) {
@@ -55,7 +55,7 @@ void output_to_file(CELL **world, int iteration, FILE *population_file){
     fprintf(
         population_file,
         "%d,%d,%d,%d,%d\n",
-        iteration,
+        generation,
         population_susceptible,
         population_exposed,
         population_infected,

@@ -1,3 +1,6 @@
+/*
+Author: @alan-oregan
+*/
 #include <pthread.h>
 #include "../common/declarations.h"
 

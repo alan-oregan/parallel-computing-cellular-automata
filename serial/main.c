@@ -1,3 +1,6 @@
+/*
+Author: @alan-oregan
+*/
 #include "../common/declarations.h"
 
 int main() {

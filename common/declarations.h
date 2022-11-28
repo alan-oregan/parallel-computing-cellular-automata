@@ -24,7 +24,7 @@
 #define REMOVED                     'R'
 
 // probabilities of infection after neighbour interaction between 0 and 1
-#define BASE_CHANCE                 0.90
+#define BASE_CHANCE                 0.40
 #define EXPOSED_INFECTION_CHANCE    0.00625
 #define INFECTED_INFECTION_CHANCE   0.0125
 
@@ -33,7 +33,7 @@
 #define INFECTED_DURATION           10
 #define REMOVED_DURATION            90
 
-#define NEIGHBOUR_COUNT             5
+#define NEIGHBOUR_COUNT             8
 
 #define OUTPUT_FILE_DIR             "output"
 

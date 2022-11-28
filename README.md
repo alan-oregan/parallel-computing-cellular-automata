@@ -119,5 +119,14 @@ RETURN 0
 ![Flowchart of serial pseudocode](/serial/Flowchart.drawio.png)
 
 ## Sources
+Simulation:
 
-[Make file | operator](https://stackoverflow.com/a/6170280)
+- [
+- [Make file | operator](https://stackoverflow.com/a/6170280)
+
+Visualisation:
+
+- [File Sorting](https://mkyong.com/java8/java-8-how-to-sort-list-with-stream-sorted/)
+
+- [WorldRenderer](https://stackoverflow.com/questions/21121859/how-to-paint-on-a-jpanel)
+- [Drawline](https://stackoverflow.com/questions/4216568/java-making-a-dot-pixel-in-swing-awt)
