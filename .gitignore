@@ -60,8 +60,8 @@ parallel/output/
 serial/output/
 
 # executables
-parallel/simulation*
-serial/simulation*
+simulation*
+simulation*
 .vscode/tasks.json
 
 # compiled files
