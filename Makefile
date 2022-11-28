@@ -26,10 +26,3 @@ clean:
 	rm -rfv output/*.dat
 	rm -rfv *.csv
 	rm -rfv *.class
-
-clean-win:
-	del /s /q simulation_*
-	del /s /q *.o
-	del /s /q *.dat
-	del /s /q *.csv
-	del /s /q *.class
