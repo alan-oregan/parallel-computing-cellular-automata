@@ -121,7 +121,6 @@ RETURN 0
 ## Sources
 Simulation:
 
-- [
 - [Make file | operator](https://stackoverflow.com/a/6170280)
 
 Visualisation:

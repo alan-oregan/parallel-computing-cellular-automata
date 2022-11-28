@@ -30,7 +30,7 @@
 
 // duration of status before change (in # generations)
 #define EXPOSED_DURATION            7
-#define INFECTED_DURATION           10
+#define INFECTED_DURATION           14
 #define REMOVED_DURATION            90
 
 #define NEIGHBOUR_COUNT             8
