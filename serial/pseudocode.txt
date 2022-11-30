@@ -1,0 +1,125 @@
+INCLUDE LIBRARIES
+
+// starting row and number of initial infections for generation 0
+INITIAL_INFECTION_ROW       0
+INITIAL_EXPOSED_NUMBER      1
+
+// the world size as SIM_SIZE * SIM_SIZE
+SIM_SIZE                    1000
+
+// Number of generations
+GEN_LENGTH                  1000
+
+// The output to file once in every:OUTPUT_SAMPLE_SIZE
+OUTPUT_SAMPLE_SIZE          100
+
+// probabilities of infection after neighbour interaction between 0 and 1
+BASE_CHANCE                 0.40
+EXPOSED_INFECTION_CHANCE    0.00625
+INFECTED_INFECTION_CHANCE   0.0125
+
+// duration of status before change (in # generations)
+EXPOSED_DURATION            7
+INFECTED_DURATION           14
+REMOVED_DURATION            90
+
+NEIGHBOUR_COUNT             8
+
+// define data structures
+STRUCT CELL
+    CHAR status
+    CHAR duration
+
+VOID initialize_world(world, newWorld:
+    FOR row, col in world:
+        world[row][col].duration = 0
+        cell_status = SUSCEPTIBLE
+        if row == INITIAL_INFECTION_ROW AND INITIAL_EXPOSED_NUMBER > col:
+            cell_status = EXPOSED
+        world[row][col].status = cell_status
+        newWorld[row][col] = world[row][col]
+
+FLOAT check_neighbours(world, row, col:
+    FOR neighbour in NEIGHBOUR_COUNT:
+        IF neighbour.status == EXPOSED:
+            chance += EXPOSED_INFECTION_CHANCE
+        ELSE IF neighbour.status == INFECTED:
+            chance += INFECTED_INFECTION_CHANCE
+
+    IF chance > 0:
+        RETURN BASE_CHANCE + chance
+
+    RETURN CHANCE
+
+VOID output_to_file(world:
+    INT population_susceptible = 0
+    INT population_exposed = 0
+    INT population_infected = 0
+    INT population_removed = 0
+
+    OPEN FILE FOR GENERATION OUTPUT
+
+    FOR row, col in world:
+        cell_status = world[row][col].status
+
+        IF SUSCEPTIBLE:
+            population_susceptible++
+
+        IF EXPOSED:
+            population_exposed++
+
+        IF INFECTED:
+            population_infected++
+
+        IF REMOVED:
+            population_removed++
+
+        OUTPUT cell_status TO GENERATION OUTPUT FILE
+
+    OUTPUT TO POPULATION FILE WITH POPULATION VALUES
+
+VOID main(:
+
+    CREATE POPULATION FILE
+
+    initialize_world()
+
+    output_to_file(world)
+
+    FOR GEN_LENGTH:
+
+        exposureChance = RANDOM_FLOAT(0,1)
+
+        FOR row, col in world:
+
+            IF world[row][col].status != SUSCEPTIBLE:
+                newWorld[row][col].duration++
+
+            IF SUSCEPTIBLE:
+                chance = check_neighbours(world, row, col)
+
+                IF exposureChance < chance:
+                    newWorld[row][col].status = EXPOSED
+                    newWorld[row][col].duration = 0
+
+            IF EXPOSED:
+                IF world[row][col].duration == EXPOSED_DURATION:
+                    newWorld[row][col].status = INFECTED
+                    newWorld[row][col].duration = 0
+
+            IF INFECTED:
+                IF world[row][col].duration == INFECTED_DURATION:
+                    newWorld[row][col].status = REMOVED
+                    newWorld[row][col].duration = 0
+
+            IF REMOVED:
+                IF world[row][col].duration == REMOVED_DURATION:
+                    newWorld[row][col].status = SUSCEPTIBLE
+                    newWorld[row][col].duration = 0
+
+        IF generation % OUTPUT_SAMPLE_SIZE == 0:
+            output_to_file(newWorld)
+
+        output_to_file(newWorld)
+
+        COPY newWorld into world

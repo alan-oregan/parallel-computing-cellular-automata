@@ -1,0 +1,79 @@
+INCLUDE HEADER FROM SERIAL
+
+// number of threads (needs to be a factor of SIM_SIZE)
+THREAD_COUNT                8
+
+VOID thread_function(RANK:
+    totalThreadCells =  SIM_SIZE/THREAD_COUNT
+    START_ROW = totalThreadCells * RANK
+    END_ROW = startIndex + totalThreadCells
+
+    FOR GEN_LENGTH:
+
+        FOR row, col from START_ROW to END_ROW in world:
+
+            IF world[row][col].status != SUSCEPTIBLE:
+                newWorld[row][col].duration++
+
+            IF SUSCEPTIBLE:
+                chance = check_neighbours(world, row, col)
+
+                IF exposureChance < chance:
+                    newWorld[row][col].status = EXPOSED
+                    newWorld[row][col].duration = 0
+
+            IF EXPOSED:
+                IF world[row][col].duration == EXPOSED_DURATION:
+                    newWorld[row][col].status = INFECTED
+                    newWorld[row][col].duration = 0
+
+            IF INFECTED:
+                IF world[row][col].duration == INFECTED_DURATION:
+                    newWorld[row][col].status = REMOVED
+                    newWorld[row][col].duration = 0
+
+            IF REMOVED:
+                IF world[row][col].duration == REMOVED_DURATION:
+                    newWorld[row][col].status = SUSCEPTIBLE
+                    newWorld[row][col].duration = 0
+
+        MUTEX_LOCK
+
+        IF thread_completion_counter == THREAD_COUNT:
+
+            thread_completion_counter = 0
+
+            BROADCAST(CONDITION_VAR)
+
+            output_to_file(newWorld)
+
+            COPY newWorld into world
+
+            exposureChance = RANDOM_FLOAT(0,1)
+
+        ELSE:
+            WHILE WAIT(CONDITION_VAR) != 0
+
+        MUTEX_UNLOCK
+
+
+
+
+
+VOID main(:
+
+    CREATE POPULATION FILE
+
+    CREATE MUTEX_LOCK, thread_completion_counter and CONDITION_VAR
+
+    initialize_world()
+
+    output_to_file(world)
+
+    FOR THREADS CREATE thread with RANK:
+        create_thread(thread_function(RANK))
+
+    FOR THREADS JOIN thread:
+        join_thread(thread_function())
+
+    output_to_file(newWorld)

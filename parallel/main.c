@@ -102,6 +102,8 @@ void* thread_func(void* rank) {
                 printf("\rGeneration %d/%d, Thread: %d, Exposure chance: %f", generation, GEN_LENGTH-1, threadRank, exposureChance);
             #endif
 
+            exposureChance = (float)rand() / (float)RAND_MAX;
+
         } else {
             #if (PARALLEL_DEBUG > 3)
                 printf("Thread %d: Waiting for other threads to finish\n", threadRank);
@@ -110,8 +112,6 @@ void* thread_func(void* rank) {
             // busy wait until all threads have completed and output occurs
             while (pthread_cond_wait(&condition, &mutex) != 0);
         }
-
-        exposureChance = (float)rand() / (float)RAND_MAX;
 
         // unlock mutex as output has been completed
         pthread_mutex_unlock(&mutex);
