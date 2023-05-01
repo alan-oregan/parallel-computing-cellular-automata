@@ -51,11 +51,11 @@ On average the parallel program is **2.114 times** faster
 
 This is a visualisation written in Java of the world after 1000 generations with a base infection chance of 90 percent and an infection duration of 14.
 
-![Java Visualisation](visualisations\sim_1000_base_90_infection_14_world.png)
+![Java Visualisation](visualisations/sim_1000_base_90_infection_14_world.png)
 
 This is a graph made with Gnuplot of the population over 1000 generations with a base infection chance of 90 percent and an infection duration of 14.
 
-![GNU Plot Graph](visualisations\sim_1000_base_90_infection_14_population.PNG)
+![GNU Plot Graph](visualisations/sim_1000_base_90_infection_14_population.PNG)
 
 ## How to run
 
