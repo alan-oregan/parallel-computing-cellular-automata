@@ -33,6 +33,7 @@
 #define INFECTED_DURATION           14
 #define REMOVED_DURATION            90
 
+// number of neighbours using the Moore model
 #define NEIGHBOUR_COUNT             8
 
 #define OUTPUT_FILE_DIR             "output"
@@ -47,7 +48,7 @@
 // 3 - output_to_file debug
 #define DEBUG                       0
 
-// number of threads (needs to be a factor of SIM_SIZE)
+// number of threads for parallel program (needs to be a factor of SIM_SIZE)
 #define THREAD_COUNT                8
 
 // 0 - no debug
@@ -55,7 +56,7 @@
 // 2 - output when thread finishes a generation
 // 3 - output when thread enters critical section
 // 4 - output when thread is busy waiting
-#define PARALLEL_DEBUG  	        0
+#define PARALLEL_DEBUG              0
 
 // 0 - Don't time the code
 // 1 - Time the code

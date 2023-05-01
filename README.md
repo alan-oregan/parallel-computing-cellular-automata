@@ -1,117 +1,165 @@
-# parallel-computing-cellular-automata
+# Parallel Computing Cellular Automata Project
 
-## Pseudocode
+## Introduction
 
-```c
-// ---------- PROGRAM AIMS ----------
+This project was created to complete an assignment with the task:
 
-/* To create a two-dimensional model, based on the concept of Cellular Automata,
-and then To write computer programs (based on that model) which simulate the spread of the SARSCoV-2 virus through a population. */
+Create a two-dimensional model, based on the concept of Cellular Automata, and then To write computer programs (based on that model) which simulate the spread of the SARSCoV-2 virus through a population.
 
-```c
-// ---------- DEFINE MACROS ----------
+### Project overview
 
-#DEFINE SIM_SIZE        100
-#DEFINE SIM_ITERATIONS  100
+- This project implements the SEIR cellular automata model to predict the spread of the SARS-CoV-2 virus using both a serial and parallel program.
 
-#DEFINE INITIAL_EXPOSED_ROW 4
-#DEFINE INITIAL_EXPOSED     4
+### SEIR Model
 
-#DEFINE OUTPUT_SAMPLE_SIZE 10
-
-// SEIR Model
-#DEFINE SUSCEPTIBLE 0
-#DEFINE INFECTED    1
-#DEFINE REMOVED     2
-#DEFINE EXPOSED     3
-
-#DEFINE NEIGHBOUR_COUNT 8
+- The world size is 1000x1000
+- Initialise world array with all susceptible and add infected with initial infected macro
+- The base chance of infection is 40 percent
+- Interacting with a single infected neighbour increases your infection chance by 0.0125
+- Interacting with a single exposed neighbour increases your infection chance by 0.00625
+- The exposed state lasts for 7 days before becoming infected
+- The infected state lasts for 14 days before recovering
+- The recovered state lasts for 90 days before being susceptible again
+- The neighbours are defined using the Moore model
 
 
-// ---------- DEFINE GLOBALS ----------
+### Program Design
 
-world = INT[SIM_SIZE][SIM_SIZE];
-newWorld = INT[SIM_SIZE][SIM_SIZE];
+#### Serial Program
+
+The serial program iterated through each cell in the world for the number of generations as defined, updating the future world and not the current world, so that the order in which the cells are checked does not affect the output and therefore makes each generation consistent.
+
+#### Parallel Program
+
+The parallel program uses the pthread library and implements the mutex and condition variable barrier (Pacheco 2011) in order to have the threads wait until they all have finished and are ready to continue with another generation and possibly have to output the resulting generation if required by the output sample size.
+
+## Results and Visualisations
+
+### Serial vs. Parallel
+
+On average the parallel program is **2.114 times** faster
+
+#### Screenshot of the serial program
+
+![Screenshot of the serial program](images/sim_s_1.jpg)
+
+#### Screenshot of the parallel program
+
+![Screenshot of the parallel program](images/sim_p_1.jpg)
+
+### Visualisation and Graphs
+
+This is a visualisation written in Java of the world after 1000 generations with a base infection chance of 90 percent and an infection duration of 14.
+
+![Java Visualisation](visualisations\sim_1000_base_90_infection_14_world.png)
+
+This is a graph made with Gnuplot of the population over 1000 generations with a base infection chance of 90 percent and an infection duration of 14.
+
+![GNU Plot Graph](visualisations\sim_1000_base_90_infection_14_population.PNG)
+
+## How to run
+
+Run the following commands in the root directory of the project.
+
+Run the following command to compile both programs
+
+```bash
+make
 ```
 
-```c
-// ---------- UTIL METHODS ----------
+Run the following command to run the serial program
 
-initialise_world(world*):
-    INT exposed = 0
-    FOR (INT row = 0; row < SIM_SIZE; row++):
-
-        FOR (INT col = 0; col < SIM_SIZE; col++):
-
-            IF (row == INITIAL_INFECTION_ROW && INITIAL_EXPOSED_NUMBER > exposed):
-       world[row][col] = exposed
-                exposed++
-
-            ELSE:
-       world[row][col] = SUSCEPTIBLE
-    output_to_file(*world)
-
-
-check_neighbours(world*, row, col):
-    INT chance = 0
-    NEIGHBOUR_COUNT = 8
-    row_offset[8] = {0, 0, -1, 1, 1, 1, -1, -1}
-    col_offset[8] = {-1, 1, 0, 0, -1, 1, -1, 1}
-
-    FOR(INT i = 0; i < NEIGHBOUR_COUNT):
-        neighbour = world[row + row_offset[i] % SIM_SIZE][col + col_offset[i] % SIM_SIZE]
-
-        IF (neighbour == EXPOSED):
-            chance += 0.0625
-
-        ELSE IF (neighbour == INFECTED):
-            chance += 0.125
-
-    RETURN chance
-
-output_to_file(newWorld*):
-    *file = OPEN("output.txt", "w")
-
-    FOR (INT row = 0; row < SIM_SIZE; row++):
-
-        FOR (INT col = 0; col < SIM_SIZE - 1; col++):
-
-            FPRINTF(*file, "%d, ", newWorld[row][col])
-
-        FPRINTF(*file, "%d\n", newWorld[row][col])
+```bash
+./simulation_s
 ```
 
+Run the following command to run the serial program
+
+```bash
+./simulation_p
+```
+
+## Program output
+
+The program will output the following files:
+
+- output/world_{generation}.dat - The world at the end of each generation in the output sample size
+- /population.csv - The population of each state over the output sample size
+
+## How to change parameters
+
+If you wish to change the parameters of the simulation, you can do so by changing the macros in the declarations.h file according to your desired parameters.
+
 ```c
-// ---------- MAIN METHOD ----------
+// starting row and number of initial infections for generation 0
+#define INITIAL_INFECTION_ROW       0
+#define INITIAL_EXPOSED_NUMBER      1
 
-initialise_world(*world)
+// the world size as SIM_SIZE * SIM_SIZE
+#define SIM_SIZE                    1000
 
-FOR (INT ITERATION = 1; ITERATION <= SIM_ITERATIONS; ITERATION++):
+// Number of generations
+#define GEN_LENGTH                  1000
 
-    FOR (INT row = 0; row < SIM_SIZE; row++):
+// The output to file once in every {OUTPUT_SAMPLE_SIZE}
+#define OUTPUT_SAMPLE_SIZE          100
 
-        FOR (INT col = 0; col < SIM_SIZE; col++):
+// probabilities of infection after neighbour interaction between 0 and 1
+#define BASE_CHANCE                 0.40
+#define EXPOSED_INFECTION_CHANCE    0.00625
+#define INFECTED_INFECTION_CHANCE   0.0125
 
-            IF (world[row][col] == SUSCEPTIBLE)
-                INT chance = check_neighbours(world*, row, col)
+// duration of status before change (in # generations)
+#define EXPOSED_DURATION            7
+#define INFECTED_DURATION           14
+#define REMOVED_DURATION            90
 
-                IF (randfloat(0, 1) <= chance):
-                    newWorld[row][col] = EXPOSED
+// number of neighbours using the Moore model
+#define NEIGHBOUR_COUNT             8
 
-            ELSE IF (world[row][col] == EXPOSED):
-                newWorld[row][col] = INFECTED
+// 0 - For no program output
+// 1 - For showing the generation number as the program runs
+#define GENERATION_OUTPUT           1
 
-            ELSE:
-                newWorld[row][col] = REMOVED
+// number of threads for parallel program (needs to be a factor of SIM_SIZE)
+#define THREAD_COUNT                8
 
-    IF (ITERATION % OUTPUT_SAMPLE_SIZE == 0):
-        output_to_file(*newWorld)
+// 0 - no debug
+// 1 - output at thread begin and end
+// 2 - output when thread finishes a generation
+// 3 - output when thread enters critical section
+// 4 - output when thread is busy waiting
+#define PARALLEL_DEBUG              0
 
-    world = newWorld
+// 0 - Don't time the code
+// 1 - Time the code
+#define TIMER                       1
 
-close_output_files();
+```
 
-RETURN 0
+### Enabling debug output
+
+If you wish to enable debug output, you can do so by changing the macros in the declarations.h file according to your desired debug level.
+
+### For the parallel program
+
+```c
+// 0 - no debug
+// 1 - output at thread begin and end
+// 2 - output when thread finishes a generation
+// 3 - output when thread enters critical section
+// 4 - output when thread is busy waiting
+#define PARALLEL_DEBUG              0
+```
+
+### For the serial program
+
+```c
+// 0 - no debug
+// 1 - check_neighbour debug,
+// 2 - Initialize_world debug,
+// 3 - output_to_file debug
+#define DEBUG                       0
 ```
 
 ## Flowchart
@@ -119,6 +167,7 @@ RETURN 0
 ![Flowchart of serial pseudocode](/serial/Flowchart.drawio.png)
 
 ## Sources
+
 Simulation:
 
 - [Make file | operator](https://stackoverflow.com/a/6170280)
